@@ -1,0 +1,44 @@
+#Navigate to path
+cd C:\wamp64\www\Kimai-Time-Tracker
+
+#Download Composer locally into this directory
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+#nstall all dependencies (creates the vendor/ folder)
+php composer.phar install --no-dev --optimize-autoloader   
+
+#If that didn't work, run with XAMPP instead
+C:\xampp\php\php.exe -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+C:\xampp\php\php.exe composer-setup.php
+C:\xampp\php\php.exe -r "unlink('composer-setup.php');"
+C:\xampp\php\php.exe composer.phar install --no-dev --optimize-autoloader   
+
+#To recreate the database
+#Make sure your .env has the correct DATABASE_URL
+#(edit .env and set it to match your XAMPP MySQL credentials)
+#DATABASE_URL=mysql://root:@127.0.0.1:3306/kimai?charset=utf8mb4
+
+#Create the database
+C:\xampp\php\php.exe bin/console doctrine:database:create
+
+#Create all tables
+C:\xampp\php\php.exe bin/console doctrine:schema:create
+
+#Mark all migrations as applied (so future updates work correctly)
+C:\xampp\php\php.exe bin/console doctrine:migrations:version --add --all
+
+
+#If coming from a fresh install, do this then edit the .env file
+copy .env.dist .env   
+
+#Generate secret key
+C:\xampp\php\php.exe -r "echo bin2hex(random_bytes(32));"   
+
+#Run commands:
+C:\xampp\php\php.exe bin/console doctrine:database:create
+C:\xampp\php\php.exe bin/console kimai:install -n   
+
+#Create Kimai user
+C:\xampp\php\php.exe bin/console kimai:user:create allen allen.aledo@gmail.com ROLE_SUPER_ADMIN "aaPortfolioPassword"   

@@ -1,0 +1,28 @@
+# 1. Remove the old cert from the store
+Remove-Item "cert:\LocalMachine\My\B083F1F892FDEBDA6129764AB0E611F013E922D5" -Force
+
+# 2. Generate a new self-signed cert (note: -KeyExportPolicy Exportable is required)
+$cert = New-SelfSignedCertificate `
+    -DnsName "kimai.allenaledo.dev" `
+    -CertStoreLocation "cert:\CurrentUser\My" `
+    -KeyExportPolicy Exportable `
+    -KeyLength 2048 `
+    -KeyAlgorithm RSA `
+    -HashAlgorithm SHA256 `
+    -NotAfter (Get-Date).AddYears(5)   
+
+# 3. Export public certificate
+Export-Certificate -Cert $cert -FilePath "D:\Desktop\localhost.cer"
+
+# 4. Export cert + private key
+$pwd = ConvertTo-SecureString -String "password" -Force -AsPlainText
+Export-PfxCertificate -Cert $cert -FilePath "D:\Desktop\localhost.pfx" -Password $pwd   
+
+#Extract the certificate
+openssl pkcs12 -in D:\Desktop\localhost.pfx -clcerts -nokeys -out D:\Desktop\server.crt
+
+#Extract the private key (unencrypted)
+openssl pkcs12 -in D:\Desktop\localhost.pfx -nocerts -nodes -out D:\Desktop\server.key   
+
+#Trust the certificate
+Import-Certificate -FilePath "C:/wamp64/www/Kimai-Time-Tracker/ssl/server.cer" -CertStoreLocation "cert:\LocalMachine\Root"   

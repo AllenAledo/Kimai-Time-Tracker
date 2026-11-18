@@ -40,7 +40,7 @@ var/templates/
 /config/secrets/prod/prod.decrypt.private.php
 .env
 /public/bundles/
-/vendor/
+#/vendor/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
